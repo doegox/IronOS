@@ -57,10 +57,12 @@ OperatingMode guiHandleDraw(void) {
       setStatusLED(LED_OFF);
     } else {
       OLED::setDisplayState(OLED::DisplayState::ON);
-      if (tipTemp > 55) {
-        setStatusLED(LED_COOLING_STILL_HOT);
-      } else {
-        setStatusLED(LED_STANDBY);
+      if (currentOperatingMode != OperatingMode::Soldering) {
+        if (tipTemp > 55) {
+          setStatusLED(LED_COOLING_STILL_HOT);
+        } else {
+          setStatusLED(LED_STANDBY);
+        }
       }
     }
   }

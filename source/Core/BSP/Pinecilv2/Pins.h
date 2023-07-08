@@ -41,4 +41,7 @@
 #define UART_TX_Pin GPIO_PIN_22
 #define UART_RX_Pin GPIO_PIN_23
 
+// WS2812B mod using TP10
+#define WS2812B_Pin GPIO_PIN_12
+
 #endif /* BSP_PINE64_PINS_H_ */
