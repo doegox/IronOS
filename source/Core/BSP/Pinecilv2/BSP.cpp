@@ -6,6 +6,9 @@
 #include "IRQ.h"
 #include "Pins.h"
 #include "Setup.h"
+#if defined(WS2812B_ENABLE)
+#include "WS2812B.h"
+#endif
 #include "TipThermoModel.h"
 #include "USBPD.h"
 #include "Utils.h"
@@ -21,6 +24,10 @@ uint8_t        holdoffTicks     = 25; // This is the tick delay before temp meas
 uint8_t        tempMeasureTicks = 25;
 
 uint16_t totalPWM = 255; // Total length of the cycle's ticks
+
+#if defined(WS2812B_ENABLE)
+WS2812B<WS2812B_Pin, 1> ws2812b;
+#endif
 
 void resetWatchdog() {
   // #TODO
@@ -127,6 +134,12 @@ uint8_t getButtonB() {
   return val;
 }
 
+void BSPInit(void) {
+#if defined(WS2812B_ENABLE)
+  ws2812b.init();
+#endif
+}
+
 void reboot() { hal_system_reset(); }
 
 void delay_ms(uint16_t count) {
@@ -146,7 +159,33 @@ bool isTipDisconnected() {
 }
 
 void setStatusLED(const enum StatusLED state) {
-  // Dont have one
+#if defined(WS2812B_ENABLE)
+  static enum StatusLED lastState = LED_UNKNOWN;
+
+  if (lastState != state || state == LED_HEATING) {
+    switch (state) {
+    default:
+    case LED_UNKNOWN:
+    case LED_OFF:
+      ws2812b.led_set_color(0, 0, 0, 0);
+      break;
+    case LED_STANDBY:
+      ws2812b.led_set_color(0, 0, 0xFF, 0); // green
+      break;
+    case LED_HEATING: {
+      ws2812b.led_set_color(0, ((xTaskGetTickCount() / 4) % 192) + 64, 0, 0); // Red fade
+    } break;
+    case LED_HOT:
+      ws2812b.led_set_color(0, 0xFF, 0, 0); // red
+      break;
+    case LED_COOLING_STILL_HOT:
+      ws2812b.led_set_color(0, 0xFF, 0x8C, 0x00); // Orange
+      break;
+    }
+    ws2812b.led_update();
+    lastState = state;
+  }
+#endif
 }
 void setBuzzer(bool on) {}
 
