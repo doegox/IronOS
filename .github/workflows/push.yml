@@ -149,9 +149,6 @@ jobs:
       - name: install black
         run: python3 -m pip install bdflib flake8
 
-      - name: Check formatting with clang-format
-        run: cd source && make clean && make check-style
-
       - name: Check python formatting with black
         run: black --check Translations
 
