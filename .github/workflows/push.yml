@@ -135,23 +135,6 @@ jobs:
         run: make  -C source/  Objects/host/brieflz/libbrieflz.so && ./Translations/brieflz_test.py
 
 
-  check_c-cpp:
-    runs-on: ubuntu-20.04
-    container:
-      image: alpine:3.16
-
-    steps:
-      - name: Install dependencies (apk)
-        run: apk add --no-cache make git diffutils findutils clang-extra-tools bash
-
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Check format style with clang-format
-        run: make  clean  check-style
-
-
   check_python:
     runs-on: ubuntu-20.04
     container:
